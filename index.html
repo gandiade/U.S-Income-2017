@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>U.S Income</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+    body {
+    margin:0;
+    padding:0;
+    font-family:
+    sans-serif;
+    }
+  h1 {
+    position: absolute;
+    left: 50px;
+    top: 10px;
+    padding: 15px 2%;
+    margin: 0;
+    background: #708238;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    color: whitesmoke;
+    font-size: 2em;
+    z-index: 800;
+    }
+  #map {
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:100%;
+    height: 100%;
+    }
+</style>
+</head>
+<body>
+    <div id='map'></div>
+    <h1>United States Average Income, 2017</h1>
+   
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
+<script>
+  var map = L.map('map', {
+        center: [39.5, -95.3],
+        zoom: 5
+    });
+
+    var Stadia_StamenTonerLite = L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}', {
+	minZoom: 0,
+	maxZoom: 20,
+	attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	ext: 'png'
+}).addTo(map);
+   
+    states = L.geoJson.ajax("Data/income.geojson",{
+       attribution: 'Data: United States Census Bureau, Map: Diana Gandia',
+        onEachFeature: function (feature, layer){
+          layer.bindPopup(feature.properties.name + '<BR>' + feature.properties.income);
+       },
+        pointToLayer: function (feature, latlng){
+            return L.circleMarker(latlng,{
+                color: '#708238',
+                opacity: 1,
+                weight: 2,
+                fillColor: '#708238',
+                fillOpacity: .6,
+                radius: calcRadius(feature.properties.income)
+            }).on({
+               mouseover: function(e){
+                 this.setStyle({color: 'blue',fillcolor: 'blue'});
+                },
+               mouseout: function(e){
+                 this.setStyle({color: '#708238', fillcolor: '#708328'});
+
+                }})},});
+    
+                
+
+            var minValue = 43441;
+            var minRadius = 8; 
+
+        function calcRadius(income) {
+            return 2 * Math.pow(income/minValue,1) * minRadius;
+        }
+        L.control.scale({position:'bottomleft'}).addTo(map);
+        states.addTo(map);
+           
+       
+       
+        
+
+  
+
+</script>
+</body>
+</html>
